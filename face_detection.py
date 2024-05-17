@@ -8,22 +8,30 @@ faceCascade = cv2.CascadeClassifier(cascPath)
 # apply faceCascade on webcam frames
 video_capture = cv2.VideoCapture(0)
 
-while True:
-    # capture frame-by-frame
-    ret, frames = video_capture.read()
-
+def detect_faces(frames):
+    # input image is be greyscale for more accurate facial detection
     grey = cv2.cvtColor(frames, cv2.COLOR_BGR2GRAY)
 
+    # detect faces in image. The faces variable contains a list of rectangular coordinates for every detected face
     faces = faceCascade.detectMultiScale(
         grey,
         scaleFactor = 1.1,
         minNeighbors = 5,
         minSize = (30, 30),
         flags = cv2.CASCADE_SCALE_IMAGE)
-
-    # draw a rectangle around the faces
+    
+    # iterate over each face and draw a rectangle around each
     for (x, y, w, h) in faces:
         cv2.rectangle(frames, (x,y), (x+w, y+h), (0,255,0), 2)
+    
+    return frames
+
+################ VIDEO LOOP ################
+while True:
+    # capture frame-by-frame
+    ret, frames = video_capture.read()
+
+    detect_faces(frames)
 
     # display the resulting frame
     cv2.imshow('Video', frames)
@@ -32,6 +40,7 @@ while True:
         break
 
     # goal: print name if face is recognized, else prompt user to input name (for future recognition)
+
 
 #release the capture frames
 video_capture.release()
